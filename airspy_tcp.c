@@ -90,6 +90,7 @@ void usage(void)
 		"\t[-T enable bias-T ]\n"
 		"\t[-P ppm_error (default: 0) ]\n"
 		"\t[-D g digital shift (default : 1) ]\n"
+		"\t[-S serial number in hex (default : first found) ]\n"
 		"\t[-v Verbose ]\n");
 	exit(1);
 }
@@ -328,6 +329,7 @@ int main(int argc, char **argv)
 	char* addr = "127.0.0.1";
 	int port = 1234;
 	uint32_t frequency = 100000000,samp_rate = 0;
+        uint64_t serial_num = 0;
 	struct sockaddr_in local, remote;
 	int gain = 0;
 	struct llist *curelem,*prev;
@@ -341,7 +343,7 @@ int main(int argc, char **argv)
 	dongle_info_t dongle_info;
 	struct sigaction sigact, sigign;
 
-	while ((opt = getopt(argc, argv, "a:p:f:g:s:b:n:d:P:TD:v")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:f:g:s:b:n:d:P:TD:S:v")) != -1) {
 		switch (opt) {
 		case 'f':
 			frequency = (uint32_t)atoi(optarg);
@@ -373,6 +375,9 @@ int main(int argc, char **argv)
 		case 'v':
 			verbose = 1;
 			break;
+                case 'S':
+                        serial_num = (uint64_t)strtoull(optarg, NULL, 16);
+                        break;
 		case 'b':
 			break;
 
@@ -385,9 +390,12 @@ int main(int argc, char **argv)
 	if (argc < optind)
 		usage();
 
-        r = airspy_open(&dev);
+        r = airspy_open_sn(&dev, serial_num);
         if( r != AIRSPY_SUCCESS ) {
                 fprintf(stderr,"airspy_open() failed: %s (%d)\n", airspy_error_name(r), r);
+                if ( serial_num != 0 ) {
+                         fprintf(stderr,"Specified serial number: %lu\n", serial_num);
+                }
                 airspy_exit();
                 return -1;
         }

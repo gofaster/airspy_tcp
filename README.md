@@ -10,5 +10,6 @@ As the rtl_tcp protocol is only 8 bits IQ, man will loose the major advantage of
 
 Notes :
  - I try it with gqrx and sdrangelove frontend only. Other tests are welcome.
- - The rtl_tcp frontend client must set one of the only two sample frequencies that the airspy supports. Others sample frequencies are not supported.
- - It must work with airspy mini too, but not tested.
+   Works as a gr-osmosdr source.
+ - The rtl_tcp frontend client must set one the frequencies that the Airspy supports. Other sample frequencies are not supported.
+ - Works with Airspy R0/R2 and Mini.
